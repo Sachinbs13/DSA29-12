@@ -1,1 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stack Visualizer</title>
+  <style>
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+    body {
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .app {
+      width: 420px;
+      background: #020617;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    h2 { text-align: center; margin-bottom: 12px; }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+    }
+    button {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      transition: background 0.2s;
+    }
+    button:hover { background: #1d4ed8; }
+
+    .stack-container {
+      border: 2px dashed #334155;
+      border-radius: 10px;
+      height: 280px;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    .stack-item {
+      width: 80%;
+      padding: 10px;
+      margin: 4px 0;
+      text-align: center;
+      background: #22c55e;
+      color: #052e16;
+      border-radius: 6px;
+      animation: pushAnim 0.3s ease;
+    }
+
+    .stack-item.peek {
+      background: #facc15;
+      color: #422006;
+    }
+
+    @keyframes pushAnim {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .status {
+      margin-top: 10px;
+      text-align: center;
+      min-height: 20px;
+      font-size: 14px;
+    }
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h2>Stack Operations</h2>
+
+    <div class="controls">
+      <input id="valueInput" placeholder="Enter value" />
+      <button onclick="push()">Push</button>
+      <button onclick="pop()">Pop</button>
+      <button onclick="peek()">Peek</button>
+    </div>
+
+    <div id="stack" class="stack-container"></div>
+
+    <div id="status" class="status"></div>
+
+    <div class="info">
+      <span>Max Size: <b id="max">5</b></span>
+      <span>Current Size: <b id="size">0</b></span>
+    </div>
+  </div>
+
+  <script>
+    const stack = [];
+    const MAX_SIZE = 5;
+    const stackDiv = document.getElementById('stack');
+    const statusDiv = document.getElementById('status');
+    const sizeSpan = document.getElementById('size');
+
+    function render(peekIndex = null) {
+      stackDiv.innerHTML = '';
+      stack.forEach((val, idx) => {
+        const el = document.createElement('div');
+        el.className = 'stack-item';
+        if (idx === peekIndex) el.classList.add('peek');
+        el.textContent = val;
+        stackDiv.appendChild(el);
+      });
+      sizeSpan.textContent = stack.length;
+    }
+
+    function push() {
+      clearStatus();
+      if (stack.length === MAX_SIZE) {
+        status('⚠ Stack Overflow');
+        return;
+      }
+      const val = document.getElementById('valueInput').value;
+      if (val === '') return;
+      stack.push(val);
+      render();
+      status(`Pushed: ${val}`);
+      document.getElementById('valueInput').value = '';
+    }
+
+    function pop() {
+      clearStatus();
+      if (stack.length === 0) {
+        status('⚠ Stack Underflow');
+        return;
+      }
+      const val = stack.pop();
+      render();
+      status(`Popped: ${val}`);
+    }
+
+    function peek() {
+      clearStatus();
+      if (stack.length === 0) {
+        status('⚠ Stack is empty');
+        return;
+      }
+      const topIndex = stack.length - 1;
+      render(topIndex);
+      status(`Peek: ${stack[topIndex]}`);
+    }
+
+    function status(msg) {
+      statusDiv.textContent = msg;
+    }
+
+    function clearStatus() {
+      statusDiv.textContent = '';
+    }
+  </script>
+</body>
+</html>
 
